@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>৩০ দিনের গোল ট্র্যাকার</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Bengali typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Hind Siliguri"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* DYNAMIC THEMES VIA CSS VARIABLES */
+        /* Theme 1: Soft Mauve & Lavender (Default) */
+        :root[data-theme="lavender"] {
+            --bg-body: #F9F8F6;
+            --bg-card: #FFFFFF;
+            --border-soft: #EAE6DF;
+            --accent-main: #8B6B8A;
+            --accent-secondary: #A27B9B;
+            --accent-light: #F5EFF4;
+            --text-dark: #332C35;
+            --text-muted: #6E6570;
+            --header-gradient: linear-gradient(135deg, #7D5F7C 0%, #8B6B8A 50%, #987597 100%);
+            --badge-bg: #8B6B8A;
+        }
+
+        /* Theme 2: Soft Rose Gold & Pearl */
+        :root[data-theme="rosegold"] {
+            --bg-body: #FAFAFA;
+            --bg-card: #FFFFFF;
+            --border-soft: #F0E6E6;
+            --accent-main: #C07A8A;
+            --accent-secondary: #D896A4;
+            --accent-light: #FDF2F4;
+            --text-dark: #3A2E30;
+            --text-muted: #7A696C;
+            --header-gradient: linear-gradient(135deg, #B56B7C 0%, #C07A8A 50%, #D18D9D 100%);
+            --badge-bg: #C07A8A;
+        }
+
+        /* Theme 3: Soft Emerald Sage */
+        :root[data-theme="sage"] {
+            --bg-body: #F7F9F8;
+            --bg-card: #FFFFFF;
+            --border-soft: #DFE8E3;
+            --accent-main: #518572;
+            --accent-secondary: #6A9E8B;
+            --accent-light: #EEF5F2;
+            --text-dark: #273831;
+            --text-muted: #5C7067;
+            --header-gradient: linear-gradient(135deg, #437362 0%, #518572 50%, #639884 100%);
+            --badge-bg: #518572;
+        }
+
+        /* Theme 4: Soft Moonlight Blue */
+        :root[data-theme="moonlight"] {
+            --bg-body: #F7F8FA;
+            --bg-card: #FFFFFF;
+            --border-soft: #E2E6EE;
+            --accent-main: #5C768D;
+            --accent-secondary: #748DA3;
+            --accent-light: #EFEF5;
+            --text-dark: #2A333D;
+            --text-muted: #5F6B77;
+            --header-gradient: linear-gradient(135deg, #4A637A 0%, #5C768D 50%, #6E889F 100%);
+            --badge-bg: #5C768D;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+        }
+
+        .soft-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.04);
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-accent-bg {
+            background-color: var(--accent-main) !important;
+        }
+        .theme-accent-text {
+            color: var(--accent-main) !important;
+        }
+        .theme-accent-border {
+            border-color: var(--accent-main) !important;
+        }
+        .theme-light-bg {
+            background-color: var(--accent-light) !important;
+        }
+
+        .nav-btn-active {
+            background: var(--accent-main);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .nav-btn-inactive {
+            background-color: var(--bg-card);
+            color: var(--text-dark);
+            border: 1px solid var(--border-soft);
+        }
+        .nav-btn-inactive:hover {
+            background-color: var(--accent-light);
+        }
+
+        /* Circular Progress Styling */
+        .circle-bg {
+            fill: none;
+            stroke: var(--border-soft);
+            stroke-width: 3.8;
+        }
+        .circle-progress {
+            fill: none;
+            stroke-width: 3.8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.4s ease, stroke 0.4s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Top Clean Banner with Theme Switcher -->
+    <header class="py-4 px-4 shadow-sm sticky top-0 z-50 text-white transition-all" style="background: var(--header-gradient);">
+        <div class="max-w-4xl mx-auto flex justify-between items-center gap-2">
+            <h1 class="text-base sm:text-xl font-black tracking-wide flex items-center gap-2">
+                <span>মাত্র ৩০ টা দিন ই তো</span>
+            </h1>
+            
+            <!-- Theme Selection Dropdown -->
+            <div class="flex items-center gap-2">
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleThemeDropdown()" class="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-xs font-bold text-white flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-palette text-[11px]"></i>
+                        <span>থিম পরিবর্তন</span>
+                        <i class="fa-solid fa-chevron-down text-[9px]"></i>
+                    </button>
+                    <div id="themeDropdownMenu" class="hidden absolute right-0 mt-2 w-44 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50 text-gray-800 text-xs font-bold">
+                        <button onclick="setTheme('lavender')" class="w-full text-left px-3.5 py-2 hover:bg-purple-50 flex items-center gap-2 text-purple-900">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#8B6B8A] inline-block"></span> ল্যাভেন্ডার (ডিফল্ট)
+                        </button>
+                        <button onclick="setTheme('rosegold')" class="w-full text-left px-3.5 py-2 hover:bg-rose-50 flex items-center gap-2 text-rose-900">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#C07A8A] inline-block"></span> রোজ গোল্ড
+                        </button>
+                        <button onclick="setTheme('sage')" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 flex items-center gap-2 text-emerald-900">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#518572] inline-block"></span> সফট সেজ গ্রিন
+                        </button>
+                        <button onclick="setTheme('moonlight')" class="w-full text-left px-3.5 py-2 hover:bg-blue-50 flex items-center gap-2 text-slate-900">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#5C768D] inline-block"></span> মুনলাইট ব্লু
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-3 sm:px-4 mt-4 space-y-4">
+
+        <!-- Dynamic Current Day Header with Integrated Overall Grid -->
+        <section class="soft-card overflow-hidden">
+            <div onclick="toggleOverallGrid()" class="p-4 theme-light-bg cursor-pointer hover:opacity-90 transition-opacity flex flex-col items-center justify-center text-center">
+                <span class="text-[11px] font-bold uppercase tracking-wider theme-accent-text px-3 py-0.5 rounded-full border border-gray-200/60 mb-1.5 flex items-center gap-1.5 bg-white">
+                    <span>📅 ৩০ দিনের অগ্রগতির জন্য ট্যাপ করুন</span>
+                    <i id="gridToggleIcon" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                </span>
+                <div id="bigDayHeader" class="text-2xl sm:text-3xl font-black flex items-center justify-center gap-2">
+                    <!-- Dynamic Text: e.g. ১ তম দিন (২৮ Oct) 🪻 -->
+                    ১ তম দিন (২৮ Oct) 🪻
+                </div>
+            </div>
+
+            <!-- Integrated Collapsible Overall Grid -->
+            <div id="overallGridContainer" class="hidden p-3.5 border-t border-gray-100 bg-gray-50/50">
+                <div class="flex justify-between items-center mb-2.5 px-1 flex-wrap gap-1">
+                    <span class="text-[11px] font-bold" style="color: var(--text-muted);">২৮ অক্টোবর থেকে ৩০ দিনের ওভারঅল স্কোর গ্রিড</span>
+                    <span class="text-[10px] text-rose-700 bg-white px-2 py-0.5 rounded-md border border-rose-200 font-semibold">৮৫%-এর নিচে বা IBA 0% = ❌</span>
+                </div>
+                <div id="dayGridTracker" class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <!-- JS populated small cards -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Day Navigation Bar & Circular Overall Scoreboard Header -->
+        <div class="soft-card p-3.5 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="navigateDay(-1)" class="px-3 py-1.5 theme-light-bg theme-accent-text hover:opacity-80 rounded-xl text-xs font-bold transition-colors border border-gray-200">
+                        <i class="fa-solid fa-chevron-left"></i> আগের দিন
+                    </button>
+                    <span id="activeDayTitle" class="text-xs font-extrabold theme-accent-text px-3 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        ১ম দিন (২৮ Oct)
+                    </span>
+                    <button onclick="navigateDay(1)" class="px-3 py-1.5 theme-light-bg theme-accent-text hover:opacity-80 rounded-xl text-xs font-bold transition-colors border border-gray-200">
+                        পরের দিন <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <button onclick="goToToday()" class="text-xs theme-accent-text hover:underline font-bold">আজকে ফিরুন</button>
+            </div>
+
+            <!-- Scoreboard -->
+            <div class="flex items-center gap-3.5 theme-light-bg px-4 py-2 rounded-xl border border-gray-200/80 w-full sm:w-auto justify-center">
+                <div class="relative w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path id="circleScorePath" class="circle-progress stroke-purple-600" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="overallPercentage" class="text-xs font-black">০%</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[11px] font-bold" style="color: var(--text-muted);">আজকের সার্বিক স্কোর</span>
+                    <span id="overallStatusBadge" class="text-xs font-bold theme-accent-text mt-0.5">
+                        শুরু হয়নি
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Navigation Bar: 3 Sections per Line -->
+        <nav class="grid grid-cols-3 gap-2 text-xs font-bold">
+            <button onclick="switchTab('iba')" id="tab-iba" class="nav-btn-active py-2.5 px-2 rounded-xl text-center transition-all">
+                ১. আইবিএ
+            </button>
+            <button onclick="switchTab('ibadat')" id="tab-ibadat" class="nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all">
+                ২. ইবাদত
+            </button>
+            <button onclick="switchTab('exercise')" id="tab-exercise" class="nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all">
+                ৩. ব্যায়াম
+            </button>
+            <button onclick="switchTab('selfcare')" id="tab-selfcare" class="nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all">
+                ৪. আত্মযত্ন
+            </button>
+            <button onclick="switchTab('food')" id="tab-food" class="nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all">
+                ৫. খাবার
+            </button>
+            <button onclick="switchTab('phone')" id="tab-phone" class="nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all">
+                ৬. ফোন
+            </button>
+        </nav>
+
+        <!-- SECTIONS CONTENT AREA -->
+
+        <!-- 1. IBA Preparation Section -->
+        <div id="section-iba" class="tab-content space-y-4">
+            <div class="soft-card p-4 space-y-4">
+                <div class="theme-light-bg p-3.5 rounded-xl border border-gray-200 flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-sm font-bold">আইবিএ প্রস্তুতি ট্র্যাকার 📚</h2>
+                        <p class="text-xs italic" style="color: var(--text-muted);">"মাত্র ৩০ টা দিন কষ্ট করেই ফেল, তারপর এপ্রিল অবদি চিল, ল্যাপটপ, বিদেশ , English expert , পাসপোর্ট ✈️"</p>
+                        <p class="text-[11px] text-rose-600 font-semibold mt-1">⚠️ নিয়ম: IBA সেকশনে মিনিমাম ১% সম্পন্ন করতেই হবে, নয়তো ওভারঅল স্কোর পেলেও সে দিনের ফল ক্রস (❌) দেখাবে!</p>
+                    </div>
+                    <span id="ibaDetailScore" class="text-xs font-black text-white theme-accent-bg px-3 py-1 rounded-full shadow-sm">০%</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                    <!-- English -->
+                    <div class="border border-gray-200 bg-gray-50/50 p-3 rounded-2xl space-y-2">
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-1.5">
+                            <h3 class="font-bold text-xs">ইংলিশ (৩ দিন সময়)</h3>
+                            <span class="text-[10px] theme-light-bg theme-accent-text font-bold px-2 py-0.5 rounded-full">৫ টপিক</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs">
+                            <label class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_eng_1" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>১. Sentence correction</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_eng_2" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>২. Fill in the blanks</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_eng_3" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>৩. Analogy</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_eng_4" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>৪. Reading comprehension</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-1.5 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_eng_5" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>৫. Error detection</span>
+                            </label>
+                        </div>
+                        <p class="text-[10px] theme-accent-text font-semibold pt-1 border-t border-gray-200">
+                            📌 ৩ দিন সময় আছে এই English section শেষ করার!
+                        </p>
+                    </div>
+
+                    <!-- Math -->
+                    <div class="border border-gray-200 bg-gray-50/50 p-3 rounded-2xl space-y-2">
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-1.5">
+                            <h3 class="font-bold text-xs">ম্যাথ (৫ দিন সময়)</h3>
+                            <span class="text-[10px] theme-light-bg theme-accent-text font-bold px-2 py-0.5 rounded-full">৩০ চ্যাপ্টার</span>
+                        </div>
+                        <p class="text-[10px] font-medium bg-white p-2 rounded-xl border border-gray-200 leading-relaxed" style="color: var(--text-muted);">
+                            <b>৫ দিনের কম্বো:</b> ১ম দিনে Chap 16,15,8,9 | ২য় দিনে 19,2,18,3,4 | ৩য় দিনে 10,11,12,23 | ৪থ দিনে 20,21,29,25 | ৫মে 27,29 ও বাকি চ্যাপ্টার
+                        </p>
+                        <div id="mathChaptersGrid" class="grid grid-cols-5 gap-1 max-h-36 overflow-y-auto p-1.5 bg-white rounded-xl border border-gray-200">
+                            <!-- JS Populated Math Chapter Checkboxes -->
+                        </div>
+                    </div>
+
+                    <!-- Analytical -->
+                    <div class="border border-gray-200 bg-gray-50/50 p-3 rounded-2xl space-y-2">
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-1.5">
+                            <h3 class="font-bold text-xs">অ্যানালিটিক্যাল (৩ দিন)</h3>
+                            <span class="text-[10px] theme-light-bg theme-accent-text font-bold px-2 py-0.5 rounded-full">৩ টপিক</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_ana_1" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>১. Puzzle solve</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_ana_2" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>২. Critical reasoning</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" id="iba_ana_3" onchange="updateIbaProgress()" class="w-3.5 h-3.5 rounded">
+                                <span>৩. Data sufficiency</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Ibadat Section -->
+        <div id="section-ibadat" class="tab-content hidden space-y-4">
+            <div class="soft-card p-4 space-y-3">
+                <div class="bg-teal-50/80 border border-teal-200/80 p-3.5 rounded-xl flex justify-between items-center">
+                    <div>
+                        <h2 class="text-sm font-bold text-teal-950">ইবাদত ট্র্যাকার 🕌</h2>
+                        <p class="text-xs text-teal-800 italic">"পরেই ফেল নামাজ টা ,আল্লাহ খুলেই দিবে হাজারটা দরজা 🤍"</p>
+                    </div>
+                    <span id="ibadatScoreBadge" class="text-xs font-bold bg-teal-700 text-white px-2.5 py-1 rounded-full">০%</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <label class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <span class="font-bold">১. ফজর</span>
+                        <input type="checkbox" id="ibadat_1" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-teal-600 rounded">
+                    </label>
+                    <label class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <span class="font-bold">২. যোহর</span>
+                        <input type="checkbox" id="ibadat_2" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-teal-600 rounded">
+                    </label>
+                    <label class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <span class="font-bold">৩. আসর</span>
+                        <input type="checkbox" id="ibadat_3" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-teal-600 rounded">
+                    </label>
+                    <label class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <span class="font-bold">৪. মাগরিব</span>
+                        <input type="checkbox" id="ibadat_4" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-teal-600 rounded">
+                    </label>
+                    <label class="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <span class="font-bold">৫. এশা</span>
+                        <input type="checkbox" id="ibadat_5" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-teal-600 rounded">
+                    </label>
+
+                    <!-- NEW IBADAT ITEM ADDED -->
+                    <label class="flex items-center justify-between p-2.5 bg-amber-50/70 rounded-xl border border-amber-200/80 cursor-pointer col-span-2 sm:col-span-1">
+                        <span class="font-bold text-amber-900 text-[11px]">তিন কুল + এস্তেগফার + আয়াতুল কুরসী ✨</span>
+                        <input type="checkbox" id="ibadat_zikr" onchange="updateSectionProgress('ibadat')" class="w-4 h-4 text-amber-600 rounded">
+                    </label>
+
+                    <label class="flex items-center justify-between p-2.5 bg-rose-50/80 rounded-xl border border-rose-200 cursor-pointer col-span-2 sm:col-span-3">
+                        <span class="font-bold text-rose-800">পিরিয়ড অপশন 🌸 (টিক দিলে অটো ১০০% স্কোর)</span>
+                        <input type="checkbox" id="ibadat_period" onchange="handlePeriodToggle()" class="w-4 h-4 text-rose-600 rounded">
+                    </label>
+                </div>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <h4 class="text-xs font-bold mb-2">ইবাদত সেকশন - ৩০ দিনের ট্র্যাকিং হিস্ট্রি:</h4>
+                    <div id="subGrid-ibadat" class="grid grid-cols-6 sm:grid-cols-10 gap-1 text-[10px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Exercise Section with 30 Minute Countdown Timer -->
+        <div id="section-exercise" class="tab-content hidden space-y-4">
+            <div class="soft-card p-4 space-y-3">
+                <div class="theme-light-bg p-3.5 rounded-xl border border-gray-200 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-sm font-bold">ব্যায়াম ট্র্যাকার 🏃‍♀️</h2>
+                        <p class="text-xs italic" style="color: var(--text-muted);">"মাত্র ৩০ টা দিন একটু নড় ভাই কোষ এর তালা খুলতে হবে"</p>
+                    </div>
+                    <span id="exerciseScoreBadge" class="text-xs font-bold theme-accent-bg text-white px-2.5 py-1 rounded-full">০%</span>
+                </div>
+
+                <!-- 30 Minute Timer Card -->
+                <div class="bg-gradient-to-br from-purple-50/60 to-pink-50/40 p-4 rounded-2xl border border-gray-200 flex flex-col items-center justify-center space-y-3 text-center">
+                    <span class="text-xs font-bold text-gray-700">৩০ মিনিটের ওয়ার্কআউট টাইমার ⏱️</span>
+                    <div id="timerDisplay" class="text-3xl sm:text-4xl font-black font-mono tracking-wider theme-accent-text">
+                        ৩০:০০
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="timerStartBtn" onclick="toggleExerciseTimer()" class="px-4 py-2 theme-accent-bg text-white rounded-xl text-xs font-bold shadow-md hover:opacity-90 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-play"></i> <span>স্টার্ট টাইমার</span>
+                        </button>
+                        <button onclick="resetExerciseTimer()" class="px-3 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-xl text-xs font-bold transition-all">
+                            <i class="fa-solid fa-rotate-left"></i> রিচেট
+                        </button>
+                    </div>
+                    <p id="timerMessage" class="text-[11px] text-gray-500 font-medium">টাইমার ০০:০০ হলে ৩০ মিনিটের এক্সারসাইজ অটোমেটিক টিক হয়ে যাবে!</p>
+                </div>
+
+                <label class="flex items-center justify-between p-3.5 bg-gray-50 rounded-2xl border border-gray-200 cursor-pointer hover:bg-gray-100/60 transition-colors">
+                    <div>
+                        <span class="font-bold text-xs sm:text-sm block">৩০ মিনিট ব্যায়াম সম্পন্ন করেছ?</span>
+                        <span class="text-[11px]" style="color: var(--text-muted);">হাঁটা, ফ্রি-হ্যান্ড ওয়ার্কআউট বা স্ট্রেচিং (ম্যানুয়াল টিক বা টাইমার অটো)</span>
+                    </div>
+                    <input type="checkbox" id="exercise_1" onchange="updateSectionProgress('exercise')" class="w-5 h-5 theme-accent-text rounded">
+                </label>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <h4 class="text-xs font-bold mb-2">ব্যায়াম সেকশন - ৩০ দিনের ট্র্যাকিং হিস্ট্রি:</h4>
+                    <div id="subGrid-exercise" class="grid grid-cols-6 sm:grid-cols-10 gap-1 text-[10px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Self-care Section (Separated Morning & Night Face Wash + Toothbrush) -->
+        <div id="section-selfcare" class="tab-content hidden space-y-4">
+            <div class="soft-card p-4 space-y-3">
+                <div class="theme-light-bg p-3.5 rounded-xl border border-gray-200 flex justify-between items-center">
+                    <h2 class="text-sm font-bold">আত্মযত্ন ও সেলফ কেয়ার ✨</h2>
+                    <span id="selfcareScoreBadge" class="text-xs font-bold theme-accent-bg text-white px-2.5 py-1 rounded-full">০%</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    <!-- Morning Facewash + Toothbrush -->
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <div>
+                            <span class="font-bold text-gray-800 block">☀️ সকালে ফেসওয়াশ + টুথব্রাশ</span>
+                            <span class="text-[10px]" style="color: var(--text-muted);">ঘুম থেকে উঠে ১ বার</span>
+                        </div>
+                        <input type="checkbox" id="selfcare_morning" onchange="updateSectionProgress('selfcare')" class="w-4 h-4 theme-accent-text rounded">
+                    </label>
+
+                    <!-- Night Facewash + Toothbrush -->
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <div>
+                            <span class="font-bold text-gray-800 block">🌙 রাতে ফেসওয়াশ + টুথব্রাশ</span>
+                            <span class="text-[10px]" style="color: var(--text-muted);">ঘুমানোর আগে ১ বার</span>
+                        </div>
+                        <input type="checkbox" id="selfcare_night" onchange="updateSectionProgress('selfcare')" class="w-4 h-4 theme-accent-text rounded">
+                    </label>
+
+                    <!-- Shampoo Days -->
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <div>
+                            <span class="font-bold text-gray-800 block">🧴 শ্যাম্পু করার দিন</span>
+                            <span class="text-[10px]" style="color: var(--text-muted);">শুক্রবার, সোমবার, বুধবার</span>
+                        </div>
+                        <input type="checkbox" id="selfcare_shampoo" onchange="updateSectionProgress('selfcare')" class="w-4 h-4 theme-accent-text rounded">
+                    </label>
+
+                    <!-- Laundry Days -->
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer">
+                        <div>
+                            <span class="font-bold text-gray-800 block">🧺 সব কাপড় ধোয়া</span>
+                            <span class="text-[10px]" style="color: var(--text-muted);">শুক্রবার</span>
+                        </div>
+                        <input type="checkbox" id="selfcare_laundry" onchange="updateSectionProgress('selfcare')" class="w-4 h-4 theme-accent-text rounded">
+                    </label>
+                </div>
+
+                <!-- COLLAPSIBLE HAIR NOTE FEATURE (Independent of Score) -->
+                <div class="border border-purple-200/80 theme-light-bg rounded-2xl overflow-hidden mt-3">
+                    <button onclick="toggleHairNote()" class="w-full p-3 flex justify-between items-center text-xs font-bold theme-accent-text hover:bg-purple-100/30 transition-colors">
+                        <span class="flex items-center gap-2">
+                            <span>💇‍♀️ হেয়ার নোট (Hair Fall Tracker)</span>
+                            <span class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-purple-200 text-gray-500">৩০ দিনের রেকর্ড</span>
+                        </span>
+                        <div class="flex items-center gap-1 text-[11px]">
+                            <span id="hairNoteStateText">ট্যাপ করে ইনপুট দিন</span>
+                            <i id="hairNoteIcon" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                        </div>
+                    </button>
+
+                    <div id="hairNoteContainer" class="hidden p-3.5 border-t border-purple-100 bg-white space-y-3">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                            <span id="hairNoteDayLabel" class="text-xs font-bold text-gray-800">
+                                <!-- Dynamic label: e.g. Oct 28 1 তম দিন বুধবার -->
+                            </span>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="number" id="hairFallInput" min="0" placeholder="চুল পড়ার সংখ্যা" onchange="saveHairNote()" oninput="saveHairNote()" class="w-full sm:w-36 px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:border-purple-400 bg-white">
+                                <span class="text-xs text-gray-500 shrink-0">টি চুল</span>
+                            </div>
+                        </div>
+
+                        <!-- 30-Day Hair Fall Log List -->
+                        <div class="space-y-1.5">
+                            <span class="text-[11px] font-bold text-gray-500 block">৩০ দিনের চুল পড়ার হিস্ট্রি:</span>
+                            <div id="hairFallLogGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 text-[10px] max-h-40 overflow-y-auto p-1 border border-gray-200 rounded-xl bg-gray-50/50">
+                                <!-- JS Populated Hair Fall Record Cards -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <h4 class="text-xs font-bold mb-2">সেলফ কেয়ার সেকশন - ৩০ দিনের ট্র্যাকিং হিস্ট্রি:</h4>
+                    <div id="subGrid-selfcare" class="grid grid-cols-6 sm:grid-cols-10 gap-1 text-[10px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Healthy Food Section (Individual Checkboxes for All Superfoods) -->
+        <div id="section-food" class="tab-content hidden space-y-4">
+            <div class="soft-card p-4 space-y-3">
+                <div class="bg-emerald-50/80 border border-emerald-200/80 p-3.5 rounded-xl flex justify-between items-center">
+                    <div>
+                        <h2 class="text-sm font-bold text-emerald-950">স্বাস্থ্যকর খাবার (Healthy Food) 🥗</h2>
+                        <p class="text-xs text-emerald-800 italic">"মাত্র ৩০ টা দিন তারপর homa ir 1.9 হয়ে যাবে ,healthy চুল,clear skin , dream life পাবো please ভাংগিস না 🩷"</p>
+                    </div>
+                    <span id="foodScoreBadge" class="text-xs font-bold bg-emerald-700 text-white px-2.5 py-1 rounded-full">০%</span>
+                </div>
+
+                <!-- 5 Essential Food Checklist Items -->
+                <div class="bg-emerald-50/40 p-3 rounded-2xl border border-emerald-100 space-y-2">
+                    <span class="text-xs font-bold text-emerald-900 block border-b border-emerald-200/60 pb-1">আজকের খাদ্যতালিকায় সুপারফুড:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        <label class="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200/60 cursor-pointer">
+                            <span class="font-bold text-gray-800">১. কাঠবাদাম</span>
+                            <input type="checkbox" id="food_super_1" onchange="saveCurrentInputs()" class="w-4 h-4 text-emerald-700 rounded">
+                        </label>
+                        <label class="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200/60 cursor-pointer">
+                            <span class="font-bold text-gray-800">২. চিয়া সিডস</span>
+                            <input type="checkbox" id="food_super_2" onchange="saveCurrentInputs()" class="w-4 h-4 text-emerald-700 rounded">
+                        </label>
+                        <label class="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200/60 cursor-pointer">
+                            <span class="font-bold text-gray-800">৩. মেথি</span>
+                            <input type="checkbox" id="food_super_3" onchange="saveCurrentInputs()" class="w-4 h-4 text-emerald-700 rounded">
+                        </label>
+                        <label class="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200/60 cursor-pointer">
+                            <span class="font-bold text-gray-800">৪. তিষি</span>
+                            <input type="checkbox" id="food_super_4" onchange="saveCurrentInputs()" class="w-4 h-4 text-emerald-700 rounded">
+                        </label>
+                        <label class="flex items-center justify-between p-2 bg-white rounded-xl border border-emerald-200/60 cursor-pointer col-span-2 sm:col-span-1">
+                            <span class="font-bold text-gray-800">৫. কালোজিরা</span>
+                            <input type="checkbox" id="food_super_5" onchange="saveCurrentInputs()" class="w-4 h-4 text-emerald-700 rounded">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- No Junk Food Pledge Checkbox -->
+                <label class="flex items-start gap-3 p-3.5 bg-emerald-50/60 border border-emerald-300 rounded-2xl cursor-pointer">
+                    <input type="checkbox" id="food_pledge" onchange="updateSectionProgress('food')" class="w-5 h-5 mt-0.5 text-emerald-700 rounded">
+                    <span id="foodPledgeText" class="text-xs font-bold text-gray-800 leading-relaxed">
+                        <!-- Dynamic Pledge Text -->
+                    </span>
+                </label>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <h4 class="text-xs font-bold mb-2">হেলদি ফুড সেকশন - ৩০ দিনের ট্র্যাকিং হিস্ট্রি:</h4>
+                    <div id="subGrid-food" class="grid grid-cols-6 sm:grid-cols-10 gap-1 text-[10px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Phone Use / YouTube Section -->
+        <div id="section-phone" class="tab-content hidden space-y-4">
+            <div class="soft-card p-4 space-y-3">
+                <div class="bg-indigo-50/80 border border-indigo-200/60 p-3.5 rounded-xl flex justify-between items-center">
+                    <h2 class="text-sm font-bold text-indigo-950">ফোন ও ইন্টানেট নিয়ম 📱</h2>
+                    <span id="phoneScoreBadge" class="text-xs font-bold bg-indigo-700 text-white px-2.5 py-1 rounded-full">০%</span>
+                </div>
+
+                <label class="flex items-start gap-3 p-3.5 bg-indigo-50/30 rounded-2xl border border-indigo-200/50 cursor-pointer">
+                    <input type="checkbox" id="phone_check" onchange="updateSectionProgress('phone')" class="w-5 h-5 mt-0.5 text-indigo-700 rounded">
+                    <span class="text-xs font-bold text-gray-800 leading-relaxed">
+                        "আমি শুধু IBA study and motivation video দেখেছি YouTube এ এবং Google AI ইউজ করেছি শুধু study এর জন্য।"
+                    </span>
+                </label>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <h4 class="text-xs font-bold mb-2">ফোন ইউজেস - ৩০ দিনের ট্র্যাকিং হিস্ট্রি:</h4>
+                    <div id="subGrid-phone" class="grid grid-cols-6 sm:grid-cols-10 gap-1 text-[10px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROMISE BOX ("কসম কর") - Updated Text -->
+        <section class="soft-card theme-light-bg border border-purple-200/70 p-4">
+            <div class="flex items-start gap-3">
+                <div class="p-2.5 theme-accent-bg text-white rounded-xl text-sm shrink-0 mt-0.5 shadow-sm">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <div class="space-y-1.5 w-full">
+                    <h2 class="text-sm font-bold theme-accent-text flex items-center gap-1.5">
+                        কসম কর ✋
+                    </h2>
+                    <p id="promiseText" class="text-xs font-medium leading-relaxed" style="color: var(--text-dark);">
+                        <!-- Dynamic Text -->
+                    </p>
+                    <label class="flex items-center gap-2 pt-1.5 cursor-pointer">
+                        <input type="checkbox" id="promiseCheckbox" onchange="togglePromiseCheck()" class="w-4 h-4 theme-accent-text rounded">
+                        <span class="text-xs font-bold theme-accent-text">আমি এই প্রমিস আজ পূর্ণ করব</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLLAPSIBLE LOW FEEL ZONE AT THE VERY BOTTOM -->
+        <section id="lowfeelSection" class="soft-card overflow-hidden border border-rose-200/70">
+            <button onclick="toggleLowFeelZone()" class="w-full p-4 bg-gradient-to-r from-rose-50/80 via-pink-50/50 to-purple-50/80 hover:bg-rose-100/50 flex justify-between items-center transition-all">
+                <span class="text-xs sm:text-sm font-black text-rose-900 flex items-center gap-2">
+                    <span>💔 লো ফিল জোন (ট্যাপ করুন)</span>
+                </span>
+                <span class="text-[11px] font-bold text-rose-700 flex items-center gap-1.5">
+                    <span id="lowfeelStateText">মোটিভেটিং কোটস দেখতে ট্যাপ করুন</span>
+                    <i id="lowfeelToggleIcon" class="fa-solid fa-chevron-down text-rose-500 transition-transform"></i>
+                </span>
+            </button>
+
+            <div id="lowfeelQuotesContainer" class="hidden p-4 bg-white border-t border-rose-100 space-y-3">
+                <p class="text-xs text-gray-500 text-center border-b border-rose-100 pb-2">যখন মন খারাপ লাগবে বা অলসতা আসবে, এখান থেকে শক্তি নে!</p>
+                <div id="quotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto p-1">
+                    <!-- 20 Emotional Bengali Quotes -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Start date reference: 28 October 2026
+        const START_YEAR = 2026;
+        const START_MONTH = 9; // October is index 9
+        const START_DAY = 28;
+        const START_DATE_OBJ = new Date(START_YEAR, START_MONTH, START_DAY);
+
+        const daysOfWeekBn = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+
+        let activeDayIndex = 1; 
+        let actualTodayIndex = 1; 
+        let appData = {};
+
+        // Exercise Timer Variables
+        let timerSeconds = 30 * 60; // 30 minutes
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        function toBengaliNumeral(num) {
+            if (num === null || num === undefined) return '';
+            const bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return num.toString().split('').map(digit => {
+                return isNaN(parseInt(digit)) ? digit : bnNums[parseInt(digit)];
+            }).join('');
+        }
+
+        const emotionalQuotes = [
+            "১. তোর আব্বু এই বয়সেও এত রাত করে বাসায় ফিরে আসে, দুপুরে ঠিকমতো খায়ও না... শুধু তোকে একটা সুন্দর ভবিষ্যৎ দেওয়ার জন্য! তুই কি আর মাত্র ৩০টা দিন কষ্ট করতে পারবি না?",
+            "২. বাবা যখন বাইরে রোদে পুড়ে ঘাম মোছে, তখন তোর অলসতা শোভা পায় না। আজ কষ্ট কর, কাল বাবাকে বলবি—'আব্বু, তুমি আর চিন্তা কোরো না, আমি আছি।'",
+            "৩. তুই যদি আজ হেরে যাস, তবে তোর পরিবারের বছরের পর বছরের স্বপ্নগুলো এক নিমেষে শেষ হয়ে যাবে। নিজের জন্য না হলেও তোর মা-বাবার হাসির জন্য উঠে দাঁড়াড়!",
+            "৪. এই ৩০ টা দিন হয়তো খুব কষ্টের। কিন্তু সারা জীবন ব্যর্থতার গ্লানি বয়ে বেড়ানোর চেয়ে এই ৩০ দিনের কষ্ট হাজার গুণ ভালো!",
+            "৫. যখনই পড়তে ইচ্ছা করবে না, তখন একবার চোখ বন্ধ করে ভাব তোর বাবা কত আশা নিয়ে তোর মুখের দিকে তাকিয়ে থাকে!",
+            "৬. সমাজে তোর মা-বাবার মাথা উঁচু করে দাঁড়ানোর দায়িত্ব তোর। তুই না পারলে আর কে পারবে?",
+            "৭. জীবনের মোড় ঘোরাতে মাত্র একটা সঠিক সিদ্ধান্ত আর ৩০ দিনের কঠোর পরিশ্রমই যথেষ্ট। আজ না থামার প্রতিজ্ঞা কর!",
+            "৮. ফেসবুক, ইউটিউব আর আড্ডা তোকে কোনো দিন খাইতে দিবে না। তোর সাফল্যই তোকে পরিচয় দেবে।",
+            "৯. হাজারটা রাত জেগে থাকা বাবার কষ্টের হিসাব তোকে একদিন সফল হয়েই মেটাতে হবে।",
+            "১০. যখন ক্লান্তি তোকে জড়িয়ে ধরবে, তখন ভাব—'আর মাত্র কটা দিন, তারপর আমি বিজয়ী!'",
+            "১১. মা হয়তো মুখে কিছু বলে না, কিন্তু প্রতিটা মোনাজাতে তোর জন্যই চোখের পানি ফেলে। সেই অশ্রুর মূল্য তোকে দিতেই হবে।",
+            "১২. আইবিএ-র স্বপ্নটা এত সহজ না, কিন্তু তুই যদি জিদ ধরিস তবে কোন বাধা তোকে আটকে রাখতে রাখতে পারবে না!",
+            "১৩. আয়নায় নিজের দিকে তাকা। তুই কি নিজেকে বিজয়ী হিসেবে দেখতে চাস নাকি একজন সুযোগ হাতছাড়া করা পরাজিত হিসেবে?",
+            "১৪. কষ্ট সবারই হয়, কিন্তু যারা এই কষ্ট সহ্য করে টিকে থাকে—ইতিহাস কেবল তাদেরই মনে রাখে।",
+            "১৫. তোর পাসপোর্টে যখন স্ট্যাম্প লাগবে, বিদেশে যখন স্বপ্নের ক্যাম্পাসে পা রাখবি—আজকের এই কষ্টগুলো তখন মিঠে মনে হবে।",
+            "১৬. অলসতা তোকে গিলে খাওয়ার আগেই তুই অলসতাকে পিষে ফেল!",
+            "১৭. ৩০ দিন পর এক নতুন 'তুই' জন্ম নিবি। যে শান্ত, সফল এবং আত্মবিশ্বাসী!",
+            "১৮. কোনো অজুহাত নয়, কোনো ফাঁকি নয়। আজ যদি ১% কাজও কম করিস, তবে তুই নিজের সাথেই বিশ্বাসঘাতকতা করলি।",
+            "১৯. তোর আব্বু না খেয়ে তোর পড়াশোনার খরচ জোগায়, আর তুই একটুখানি পড়তে গিয়ে ক্লান্ত হয়ে যাস? ছিঃ!",
+            "২০. ওঠ, মুখ ধো, আর এক মুহূর্ত সময় নষ্ট না করে পড়তে বোস! তোকে জিততেই হবে!"
+        ];
+
+        window.onload = function() {
+            calculateActualToday();
+            activeDayIndex = actualTodayIndex;
+            loadStoredTheme();
+            loadStoredData();
+            renderMathChapters();
+            renderQuotes();
+            loadDayUI(activeDayIndex);
+        };
+
+        function calculateActualToday() {
+            const today = new Date();
+            const diffTime = today - START_DATE_OBJ;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            if (diffDays < 1) actualTodayIndex = 1;
+            else if (diffDays > 30) actualTodayIndex = 30;
+            else actualTodayIndex = diffDays;
+        }
+
+        function getDateObj(dayIndex) {
+            return new Date(START_YEAR, START_MONTH, START_DAY + (dayIndex - 1));
+        }
+
+        function getDateString(dayIndex) {
+            const d = getDateObj(dayIndex);
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${toBengaliNumeral(d.getDate())} ${months[d.getMonth()]}`;
+        }
+
+        function getFullDayString(dayIndex) {
+            const d = getDateObj(dayIndex);
+            const months = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+            const monthName = months[d.getMonth() === 9 ? 0 : d.getMonth() === 10 ? 1 : 2];
+            const dayOfWeek = daysOfWeekBn[d.getDay()];
+            return `${monthName} ${toBengaliNumeral(d.getDate())} ${toBengaliNumeral(dayIndex)} তম দিন ${dayOfWeek}`;
+        }
+
+        /* THEME MANAGEMENT */
+        function toggleThemeDropdown() {
+            const menu = document.getElementById('themeDropdownMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('radia_app_theme', themeName);
+            document.getElementById('themeDropdownMenu').classList.add('hidden');
+        }
+
+        function loadStoredTheme() {
+            const savedTheme = localStorage.getItem('radia_app_theme') || 'lavender';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function loadStoredData() {
+            const stored = localStorage.getItem('radia_goal_tracker_data');
+            if (stored) {
+                appData = JSON.parse(stored);
+            } else {
+                appData = {};
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('radia_goal_tracker_data', JSON.stringify(appData));
+            updateOverallGridUI();
+            renderSubGrids();
+            renderHairFallLog();
+        }
+
+        function navigateDay(offset) {
+            let nextDay = activeDayIndex + offset;
+            if (nextDay >= 1 && nextDay <= 30) {
+                activeDayIndex = nextDay;
+                loadDayUI(activeDayIndex);
+            }
+        }
+
+        function goToToday() {
+            activeDayIndex = actualTodayIndex;
+            loadDayUI(activeDayIndex);
+        }
+
+        function renderMathChapters() {
+            const container = document.getElementById('mathChaptersGrid');
+            container.innerHTML = '';
+            for (let i = 1; i <= 30; i++) {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-1 bg-gray-50 p-1 rounded-lg text-[10px]";
+                div.innerHTML = `
+                    <input type="checkbox" id="iba_math_chap_${i}" onchange="updateIbaProgress()" class="w-3 h-3 text-purple-600 rounded">
+                    <label for="iba_math_chap_${i}" class="cursor-pointer font-medium text-gray-700">C${toBengaliNumeral(i)}</label>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function renderQuotes() {
+            const container = document.getElementById('quotesGrid');
+            container.innerHTML = '';
+            emotionalQuotes.forEach(q => {
+                const div = document.createElement('div');
+                div.className = "bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs font-medium text-gray-800 leading-relaxed";
+                div.innerText = q;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleOverallGrid() {
+            const container = document.getElementById('overallGridContainer');
+            const icon = document.getElementById('gridToggleIcon');
+            container.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        function toggleLowFeelZone() {
+            const container = document.getElementById('lowfeelQuotesContainer');
+            const icon = document.getElementById('lowfeelToggleIcon');
+            const stateText = document.getElementById('lowfeelStateText');
+            
+            const isHidden = container.classList.contains('hidden');
+            if(isHidden) {
+                container.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+                stateText.innerText = 'বন্ধ করতে ট্যাপ করুন';
+            } else {
+                container.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+                stateText.innerText = 'মোটিভেটিং কোটস দেখতে ট্যাপ করুন';
+            }
+        }
+
+        function toggleHairNote() {
+            const container = document.getElementById('hairNoteContainer');
+            const icon = document.getElementById('hairNoteIcon');
+            const stateText = document.getElementById('hairNoteStateText');
+            
+            const isHidden = container.classList.contains('hidden');
+            if(isHidden) {
+                container.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+                stateText.innerText = 'হাইড করতে ট্যাপ করুন';
+            } else {
+                container.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+                stateText.innerText = 'ট্যাপ করে ইনপুট দিন';
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "nav-btn-inactive py-2.5 px-2 rounded-xl text-center transition-all";
+            });
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.className = "nav-btn-active py-2.5 px-2 rounded-xl text-center transition-all";
+        }
+
+        /* EXERCISE TIMER LOGIC */
+        function toggleExerciseTimer() {
+            const btn = document.getElementById('timerStartBtn');
+            if(isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>স্টার্ট টাইমার</span>`;
+            } else {
+                isTimerRunning = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>পজ টাইমার</span>`;
+                timerInterval = setInterval(() => {
+                    if(timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        document.getElementById('exercise_1').checked = true;
+                        updateSectionProgress('exercise');
+                        document.getElementById('timerMessage').innerText = "🎉 ওয়াও! ৩০ মিনিটের ব্যায়াম সম্পূর্ণ হয়েছে এবং অটো টিক হয়ে গেছে!";
+                        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>সম্পন্ন!</span>`;
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetExerciseTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 30 * 60;
+            updateTimerDisplay();
+            document.getElementById('timerStartBtn').innerHTML = `<i class="fa-solid fa-play"></i> <span>স্টার্ট টাইমার</span>`;
+            document.getElementById('timerMessage').innerText = "টাইমার ০০:০০ হলে ৩০ মিনিটের এক্সারসাইজ অটোমেটিক টিক হয়ে যাবে!";
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const formattedMins = mins < 10 ? '0' + mins : mins;
+            const formattedSecs = secs < 10 ? '0' + secs : secs;
+            document.getElementById('timerDisplay').innerText = `${toBengaliNumeral(formattedMins)}:${toBengaliNumeral(formattedSecs)}`;
+        }
+
+        function loadDayUI(day) {
+            const dateStr = getDateString(day);
+            const bnDay = toBengaliNumeral(day);
+            
+            document.getElementById('bigDayHeader').innerText = `${bnDay} তম দিন (${dateStr}) 🪻`;
+            document.getElementById('activeDayTitle').innerText = `${bnDay}ম দিন (${dateStr})`;
+
+            if(!appData[day]) {
+                appData[day] = {
+                    promise: false,
+                    iba: {},
+                    ibadat: {},
+                    exercise: false,
+                    selfcare: {},
+                    hairFall: "",
+                    superFoods: {},
+                    foodPledge: false,
+                    phonePledge: false
+                };
+            }
+
+            const data = appData[day];
+
+            const nextDay = day < 30 ? day + 1 : 30;
+            const bnNextDay = toBengaliNumeral(nextDay);
+            
+            document.getElementById('promiseText').innerText = 
+                `"আল্লাহর কসম আমি ${bnDay} তম দিন এবং ${bnNextDay} তম দিন আমার ওভারঅল স্কোর ৮৫% করব, আল্লাহ তোমায় কসম দিলাম, যদি অনেক কষ্ট হয় এটলিস্ট ৮৪% করবই, আর যদি emergency situation হয় তাইলে মিনিমাম ৫০% করবই এটা আমার কসম"`
+
+            document.getElementById('promiseCheckbox').checked = !!data.promise;
+
+            document.getElementById('foodPledgeText').innerText = 
+                `"আমি ${bnDay}তম দিনে কোনো চিনি, ভাজা, তেল, বাইরের খাবার, নুডুলস, একটা বাজে খাবারও খাইনাই, সব হেলদি খেয়েছি এবং উপরের must have খাবারগুলোও খেয়েছি।"`;
+
+            // Hair Note UI
+            document.getElementById('hairNoteDayLabel').innerText = getFullDayString(day);
+            <!-- Super Foods Checkboxes -->
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`food_super_${i}`).checked = !!(data.superFoods && data.superFoods[`sf_${i}`]);
+            }
+            document.getElementById('food_pledge').checked = !!data.foodPledge;
+
+            // Phone
+            document.getElementById('phone_check').checked = !!data.phonePledge;
+
+            calculateScores();
+            updateOverallGridUI();
+            renderSubGrids();
+            renderHairFallLog();
+        }
+
+        function handlePeriodToggle() {
+            const isPeriod = document.getElementById('ibadat_period').checked;
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`ibadat_${i}`);
+                if (el) el.disabled = isPeriod;
+            }
+            const zikrEl = document.getElementById('ibadat_zikr');
+            if (zikrEl) zikrEl.disabled = isPeriod;
+
+            saveCurrentInputs();
+        }
+
+        function togglePromiseCheck() {
+            if (!appData[activeDayIndex]) appData[activeDayIndex] = {};
+            appData[activeDayIndex].promise = document.getElementById('promiseCheckbox').checked;
+            saveData();
+        }
+
+        function saveHairNote() {
+            if (!appData[activeDayIndex]) appData[activeDayIndex] = {};
+            appData[activeDayIndex].hairFall = document.getElementById('hairFallInput').value;
+            saveData();
+        }
+
+        function saveCurrentInputs() {
+            if(!appData[activeDayIndex]) appData[activeDayIndex] = {};
+
+            // IBA
+            appData[activeDayIndex].iba = {};
+            for (let i = 1; i <= 5; i++) appData[activeDayIndex].iba[`eng_${i}`] = document.getElementById(`iba_eng_${i}`).checked;
+            for (let i = 1; i <= 30; i++) appData[activeDayIndex].iba[`math_${i}`] = document.getElementById(`iba_math_chap_${i}`).checked;
+            for (let i = 1; i <= 3; i++) appData[activeDayIndex].iba[`ana_${i}`] = document.getElementById(`iba_ana_${i}`).checked;
+
+            // Ibadat
+            appData[activeDayIndex].ibadat = {
+                period: document.getElementById('ibadat_period').checked,
+                zikr: document.getElementById('ibadat_zikr').checked
+            };
+            for (let i = 1; i <= 5; i++) appData[activeDayIndex].ibadat[`w_${i}`] = document.getElementById(`ibadat_${i}`).checked;
+
+            // Exercise
+            appData[activeDayIndex].exercise = document.getElementById('exercise_1').checked;
+
+            // Selfcare
+            appData[activeDayIndex].selfcare = {
+                morning: document.getElementById('selfcare_morning').checked,
+                night: document.getElementById('selfcare_night').checked,
+                shampoo: document.getElementById('selfcare_shampoo').checked,
+                laundry: document.getElementById('selfcare_laundry').checked
+            };
+            appData[activeDayIndex].hairFall = document.getElementById('hairFallInput').value;
+
+            // Super Foods
+            appData[activeDayIndex].superFoods = {};
+            for (let i = 1; i <= 5; i++) {
+                appData[activeDayIndex].superFoods[`sf_${i}`] = document.getElementById(`food_super_${i}`).checked;
+            }
+
+            // Food Pledge
+            appData[activeDayIndex].foodPledge = document.getElementById('food_pledge').checked;
+
+            // Phone
+            appData[activeDayIndex].phonePledge = document.getElementById('phone_check').checked;
+
+            calculateScores();
+        }
+
+        function updateIbaProgress() {
+            saveCurrentInputs();
+        }
+
+        function updateSectionProgress(sec) {
+            saveCurrentInputs();
+        }
+
+        function calculateScores() {
+            const d = appData[activeDayIndex] || {};
+
+            // IBA Score
+            let ibaChecked = 0;
+            if(d.iba) Object.values(d.iba).forEach(v => { if(v) ibaChecked++; });
+            let ibaPercentage = Math.round((ibaChecked / 38) * 100);
+            document.getElementById('ibaDetailScore').innerText = `${toBengaliNumeral(ibaPercentage)}%`;
+            d.ibaScore = ibaPercentage;
+
+            // Ibadat Score (5 Waqts + Zikr = 6 items)
+            let ibadatPercentage = 0;
+            if(d.ibadat && d.ibadat.period) {
+                ibadatPercentage = 100;
+            } else {
+                let count = 0;
+                if(d.ibadat) {
+                    for(let i=1; i<=5; i++) if(d.ibadat[`w_${i}`]) count++;
+                    if(d.ibadat.zikr) count++;
+                }
+                ibadatPercentage = Math.round((count / 6) * 100);
+            }
+            document.getElementById('ibadatScoreBadge').innerText = `${toBengaliNumeral(ibadatPercentage)}%`;
+
+            // Exercise Score
+            let exPercentage = d.exercise ? 100 : 0;
+            document.getElementById('exerciseScoreBadge').innerText = `${toBengaliNumeral(exPercentage)}%`;
+
+            // Selfcare Score (Morning, Night, Shampoo, Laundry = 4 items)
+            let scCount = 0;
+            if(d.selfcare) {
+                if(d.selfcare.morning) scCount++;
+                if(d.selfcare.night) scCount++;
+                if(d.selfcare.shampoo) scCount++;
+                if(d.selfcare.laundry) scCount++;
+            }
+            let selfcarePercentage = Math.round((scCount / 4) * 100);
+            document.getElementById('selfcareScoreBadge').innerText = `${toBengaliNumeral(selfcarePercentage)}%`;
+
+            // Food Score
+            let foodPercentage = d.foodPledge ? 100 : 0;
+            document.getElementById('foodScoreBadge').innerText = `${toBengaliNumeral(foodPercentage)}%`;
+
+            // Phone Score
+            let phonePercentage = d.phonePledge ? 100 : 0;
+            document.getElementById('phoneScoreBadge').innerText = `${toBengaliNumeral(phonePercentage)}%`;
+
+            // Overall Score
+            let overallScore = Math.round((ibaPercentage + ibadatPercentage + exPercentage + selfcarePercentage + foodPercentage + phonePercentage) / 6);
+
+            document.getElementById('overallPercentage').innerText = `${toBengaliNumeral(overallScore)}%`;
+            const circlePath = document.getElementById('circleScorePath');
+            circlePath.setAttribute('stroke-dasharray', `${overallScore}, 100`);
+
+            const badge = document.getElementById('overallStatusBadge');
+            
+            const passedIbaRule = ibaPercentage > 0;
+            const targetScorePass = overallScore >= 85 || (overallScore >= 84);
+
+            if(targetScorePass && passedIbaRule) {
+                circlePath.className = "circle-progress stroke-emerald-500";
+                badge.className = "text-xs font-bold text-emerald-700";
+                badge.innerText = "লক্ষ্য পূরণ ✅";
+            } else if(overallScore >= 85 && !passedIbaRule) {
+                circlePath.className = "circle-progress stroke-rose-500";
+                badge.className = "text-xs font-bold text-rose-600";
+                badge.innerText = "❌ IBA ০%";
+            } else if(overallScore > 0) {
+                circlePath.className = "circle-progress stroke-purple-600";
+                badge.className = "text-xs font-bold theme-accent-text";
+                badge.innerText = "চলছে 🌸";
+            } else {
+                circlePath.className = "circle-progress stroke-gray-200";
+                badge.className = "text-xs font-bold text-gray-400";
+                badge.innerText = "শুরু হয়নি";
+            }
+
+            appData[activeDayIndex].calculatedScore = overallScore;
+            saveData();
+        }
+
+        function updateOverallGridUI() {
+            const container = document.getElementById('dayGridTracker');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 30; i++) {
+                const dayObj = appData[i] || {};
+                const score = dayObj.calculatedScore || 0;
+                const ibaScore = dayObj.ibaScore || 0;
+                const isPast = i < actualTodayIndex;
+                const dateStr = getDateString(i);
+                const bnDay = toBengaliNumeral(i);
+                const bnScore = toBengaliNumeral(score);
+
+                let bgClass = "bg-white border-gray-200 text-gray-600";
+                let label = `${bnScore}%`;
+
+                const passedIba = ibaScore > 0;
+                const targetPassed = score >= 85;
+
+                if (targetPassed && passedIba) {
+                    bgClass = "bg-emerald-600 text-white border-emerald-700 font-bold";
+                    label = "✓ " + bnScore + "%";
+                } else if ((isPast && (score < 85 || !passedIba)) || (!passedIba && score >= 85)) {
+                    bgClass = "bg-rose-500 text-white border-rose-600 font-bold";
+                    label = "❌ " + bnScore + "%";
+                } else if (score > 0) {
+                    bgClass = "theme-light-bg theme-accent-text border-gray-200 font-bold";
+                    label = bnScore + "%";
+                }
+
+                if (i === activeDayIndex) {
+                    bgClass += " ring-2 ring-purple-500 ring-offset-1";
+                }
+
+                const card = document.createElement('div');
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    activeDayIndex = i;
+                    loadDayUI(i);
+                };
+                card.className = `p-1 rounded-lg border text-center cursor-pointer transition-transform hover:scale-105 ${bgClass}`;
+                card.innerHTML = `
+                    <div class="text-[9px] opacity-80">${bnDay}ম (${dateStr})</div>
+                    <div class="text-[10px] font-black mt-0.5">${label}</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function renderSubGrids() {
+            const sections = ['ibadat', 'exercise', 'selfcare', 'food', 'phone'];
+
+            sections.forEach(sec => {
+                const container = document.getElementById(`subGrid-${sec}`);
+                if(!container) return;
+                container.innerHTML = '';
+
+                for(let i=1; i<=30; i++) {
+                    const dayData = appData[i] || {};
+                    let isComplete = false;
+
+                    if(sec === 'ibadat') {
+                        if(dayData.ibadat?.period) isComplete = true;
+                        else {
+                            let cnt = 0;
+                            if(dayData.ibadat) {
+                                for(let k=1; k<=5; k++) if(dayData.ibadat[`w_${k}`]) cnt++;
+                                if(dayData.ibadat.zikr) cnt++;
+                            }
+                            if(cnt === 6) isComplete = true;
+                        }
+                    } else if(sec === 'exercise') {
+                        if(dayData.exercise) isComplete = true;
+                    } else if(sec === 'selfcare') {
+                        let cnt = 0;
+                        if(dayData.selfcare) {
+                            if(dayData.selfcare.morning) cnt++;
+                            if(dayData.selfcare.night) cnt++;
+                            if(dayData.selfcare.shampoo) cnt++;
+                            if(dayData.selfcare.laundry) cnt++;
+                        }
+                        if(cnt === 4) isComplete = true;
+                    } else if(sec === 'food') {
+                        if(dayData.foodPledge) isComplete = true;
+                    } else if(sec === 'phone') {
+                        if(dayData.phonePledge) isComplete = true;
+                    }
+
+                    const badge = document.createElement('div');
+                    badge.className = `p-1 text-center rounded-lg border font-bold ${
+                        isComplete ? 'theme-accent-bg text-white border-purple-800' : 'bg-gray-50 text-gray-400 border-gray-200'
+                    }`;
+                    badge.innerText = `${toBengaliNumeral(i)}ম ${isComplete ? '✓' : ''}`;
+                    container.appendChild(badge);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
